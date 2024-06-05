@@ -10,14 +10,14 @@ public with sharing class MaintenanceRequestHelper {
             }
         }
 
-        List<Equipment_Maintenance_Item__c> equipmentItemsList = [SELECT Equipment__c,Maintenance_Request__c FROM Equipment_Maintenance_Item__c WHERE Maintenance_Request__c IN :newCaseList];
+        List<Equipment_Maintenance_Item__c> equipmentItemsList = [SELECT Equipment__c,Maintenance_Request__c FROM Equipment_Maintenance_Item__c WHERE Maintenance_Request__c IN :newCaseList WITH USER_MODE];
        
         List<Id> equipments = new List<Id>();
         for(Equipment_Maintenance_Item__c item : equipmentItemsList) {
             equipments.add(item.Equipment__c);
         }
 
-        List<AggregateResult> listOfAggregateResult = [SELECT MIN(Maintenance_Cycle__c) minCycle FROM Product2 where Id in :equipments];
+        List<AggregateResult> listOfAggregateResult = [SELECT MIN(Maintenance_Cycle__c) minCycle FROM Product2 where Id in :equipments WITH USER_MODE];
         
         Integer minCycleCount;
 
@@ -46,7 +46,7 @@ public static List<Case> fillData (List<Case> cases,Integer minCycle,List<Equipm
         caseList.add(newCase);
     }
     
-    insert caseList;
+    insert as user caseList;
      
     Map<Id,Id> oldNew = new Map<Id,Id>();
 
@@ -54,7 +54,7 @@ public static List<Case> fillData (List<Case> cases,Integer minCycle,List<Equipm
         oldNew.put((Id) caseList[i].Subject, caseList[i].Id);
     }
 
-    for(Equipment_Maintenance_Item__c item : [SELECT Equipment__c,Maintenance_Request__c FROM Equipment_Maintenance_Item__c WHERE Maintenance_Request__c IN :cases]) {
+    for(Equipment_Maintenance_Item__c item : [SELECT Equipment__c,Maintenance_Request__c FROM Equipment_Maintenance_Item__c WHERE Maintenance_Request__c IN :cases WITH USER_MODE]) {
 
         Equipment_Maintenance_Item__c newItem = new Equipment_Maintenance_Item__c(Equipment__c = item.Equipment__c, Maintenance_Request__c = oldNew.get(item.Maintenance_Request__c));
         updatedList.add(newItem);
@@ -62,7 +62,7 @@ public static List<Case> fillData (List<Case> cases,Integer minCycle,List<Equipm
 
 
     if(updatedList.size() > 0) {
-        insert updatedList;
+        insert as user updatedList;
     }
 
     return caseList;
@@ -80,7 +80,7 @@ public static List<Case> fillData (List<Case> cases,Integer minCycle,List<Equipm
         }
         List<Case> cases = [SELECT Id, 
                                        (SELECT Equipment__r.Maintenance_Cycle__c FROM Equipment_Maintenance_Items__r) 
-                                FROM Case WHERE Id in :workCases];
+                                FROM Case WHERE Id in :workCases WITH USER_MODE];
 
         Map<Id, Decimal> newCaseWithCycle = new Map<Id, Decimal>();
 
@@ -112,7 +112,7 @@ public static List<Case> fillData (List<Case> cases,Integer minCycle,List<Equipm
                     oldToNewCaseMap.put(c.Id, newCase);
                 }
 
-                insert oldToNewCaseMap.values();
+                insert as user oldToNewCaseMap.values();
 
                 List<Equipment_Maintenance_Item__c> items = new List<Equipment_Maintenance_Item__c>();
                 for(Case c : cases) {
@@ -122,6 +122,6 @@ public static List<Case> fillData (List<Case> cases,Integer minCycle,List<Equipm
                         items.add(emi);
                     }
                 }
-                insert items;
+                insert as user items;
     }
 }

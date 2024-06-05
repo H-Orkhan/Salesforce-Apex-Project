@@ -17,7 +17,7 @@ global with sharing class WarehouseCalloutService implements  Queueable ,Databas
             Map<String,Id> skuToIdMap = new Map<String,Id>();
         
             //I added it after refactoring (line 19-22)
-            for(Product2 product : [SELECT Warehouse_SKU__c, Id FROM Product2]) {
+            for(Product2 product : [SELECT Warehouse_SKU__c, Id FROM Product2 WITH USER_MODE]) {
                 skuToIdMap.put(product.Warehouse_SKU__c, product.Id);
             }
 
@@ -36,7 +36,7 @@ global with sharing class WarehouseCalloutService implements  Queueable ,Databas
                 pr.Warehouse_SKU__c = eq.sku;
                 newEquipmentList.add(pr);
             }
-            upsert newEquipmentList;
+            upsert as user newEquipmentList;
         }
     }
 

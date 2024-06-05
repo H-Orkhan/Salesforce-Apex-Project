@@ -1,6 +1,6 @@
 
 @isTest
-global class WarehouseCalloutServiceMock implements HttpCalloutMock{
+global with sharing class WarehouseCalloutServiceMock implements HttpCalloutMock{
     
     global HttpResponse respond(HttpRequest request) {
 

@@ -6,23 +6,23 @@ public with sharing class MaintenanceRequestHelperTest {
         public static void testWhenIsUpdatedPositive() {
 
             Vehicle__c vehicle = new Vehicle__c();
-            insert vehicle;
+            insert  as user vehicle;
 
             Case testCase = new Case (Type = 'Repair', Status = 'New', Vehicle__c = vehicle.Id);
-            insert testCase;
+            insert as user testCase;
 
             Product2 equipment = new Product2(Name = 'Equipment for test' ,Maintenance_Cycle__c = 15, Replacement_Part__c = true);
-            insert equipment;
+            insert as user equipment;
 
             Equipment_Maintenance_Item__c item = new Equipment_Maintenance_Item__c (Equipment__c = equipment.Id, Maintenance_Request__c = testCase.Id);
-            insert item;
+            insert as user item;
 
             Test.startTest();
             testCase.Status = 'Closed';
-            Database.SaveResult result = Database.update(testCase, false);
+            Database.SaveResult result = Database.update(testCase,AccessLevel.USER_MODE);
             Test.stopTest();
 
-            List<Case> cases = [Select Id,Type,Subject,Vehicle__c,Date_Reported__c from Case Where Status = 'New'];
+            List<Case> cases = [Select Id,Type,Subject,Vehicle__c,Date_Reported__c from Case Where Status = 'New' WITH USER_MODE];
             System.assertEquals(cases.size(), 1);
             System.assertEquals(cases[0].Type, 'Repair');
             System.assertEquals(cases[0].Vehicle__c, vehicle.Id);
@@ -34,23 +34,23 @@ public with sharing class MaintenanceRequestHelperTest {
         public static void testWhenIsUpdatedPositiveAndCycleIsNull() {
 
             Vehicle__c vehicle = new Vehicle__c();
-            insert vehicle;
+            insert as user vehicle;
 
             Case testCase = new Case (Type = 'Repair', Status = 'New', Vehicle__c = vehicle.Id);
-            insert testCase;
+            insert as user testCase;
 
             Product2 equipment = new Product2(Name = 'Equipment for test' ,Maintenance_Cycle__c = null, Replacement_Part__c = true);
-            insert equipment;
+            insert as user equipment;
 
             Equipment_Maintenance_Item__c item = new Equipment_Maintenance_Item__c (Equipment__c = equipment.Id, Maintenance_Request__c = testCase.Id);
-            insert item;
+            insert as user item;
 
             Test.startTest();
             testCase.Status = 'Closed';
-            Database.SaveResult result = Database.update(testCase, false);
+            Database.SaveResult result = Database.update(testCase, AccessLevel.USER_MODE);
             Test.stopTest();
 
-            List<Case> cases = [Select Id,Type,Subject,Vehicle__c,Date_Reported__c from Case Where Status = 'New'];
+            List<Case> cases = [Select Id,Type,Subject,Vehicle__c,Date_Reported__c from Case Where Status = 'New' WITH USER_MODE];
             System.assertEquals(cases.size(), 1);
             System.assertEquals(cases[0].Type, 'Repair');
             System.assertEquals(cases[0].Vehicle__c, vehicle.Id);
@@ -66,25 +66,25 @@ public with sharing class MaintenanceRequestHelperTest {
             for(Integer i = 0;i<count;i++) {
             vehicleList.add(new Vehicle__c (Name = 'Test Name ' + i));
             }
-            insert vehicleList;
+            insert  as user vehicleList;
             
             List<Case> oldCasesList = new List<Case>();
             for(Integer i = 0;i<count;i++) {
                 oldCasesList.add(new Case (Type = 'Repair', Status = 'New', Vehicle__c = vehicleList[i].Id, Description = 'Test Case ' + i));
             }
-            insert oldCasesList;
+            insert  as user oldCasesList;
             
             List<Product2> productList = new List<Product2>();
             for(Integer i = 0;i<count;i++) {
                 productList.add(new Product2(Name = 'Equipment for test ' +i ,Maintenance_Cycle__c = 15, Replacement_Part__c = true));
             }
-            insert productList;
+            insert  as user productList;
             
             List<Equipment_Maintenance_Item__c> itemList = new List<Equipment_Maintenance_Item__c>();
             for(Integer i = 0;i<count;i++) {
                 itemList.add(new Equipment_Maintenance_Item__c (Equipment__c = productList[i].Id, Maintenance_Request__c = oldCasesList[i].Id));
             }
-            insert itemList;
+            insert as user itemList;
             
             Test.startTest();
             
@@ -94,10 +94,10 @@ public with sharing class MaintenanceRequestHelperTest {
                 newCases.add(oldCasesList[i]);
             }
             
-            List<Database.SaveResult> result = Database.update(newCases, false);
+            List<Database.SaveResult> result = Database.update(newCases, AccessLevel.USER_MODE);
             Test.stopTest();
             
-            List<Case> cases = [Select Id,Type,Subject from Case Where Status = 'New'];
+            List<Case> cases = [Select Id,Type,Subject from Case Where Status = 'New' WITH USER_MODE];
             System.assertEquals(cases.size(), count);
 
         }
@@ -105,23 +105,23 @@ public with sharing class MaintenanceRequestHelperTest {
         public static void testWhenIsUpdatedFalse() {
 
             Vehicle__c vehicle = new Vehicle__c();
-            insert vehicle;
+            insert as user vehicle;
 
             Case testCase = new Case (Type = 'Test Type', Status = 'Closed', Vehicle__c = vehicle.Id);
-            insert testCase;
+            insert as user testCase;
 
             Product2 equipment = new Product2(Name = 'Equipment for test' ,Maintenance_Cycle__c = 15, Replacement_Part__c = true);
-            insert equipment;
+            insert as user equipment;
 
             Equipment_Maintenance_Item__c item = new Equipment_Maintenance_Item__c (Equipment__c = equipment.Id, Maintenance_Request__c = testCase.Id);
-            insert item;
+            insert as user item;
 
             Test.startTest();
             testCase.Status = 'Closed';
-            Database.SaveResult result = Database.update(testCase, false);
+            Database.SaveResult result = Database.update(testCase, AccessLevel.USER_MODE);
             Test.stopTest();
 
-            List<Case> cases = [Select Id,Type,Subject from Case Where Status = 'New'];
+            List<Case> cases = [Select Id,Type,Subject from Case Where Status = 'New' WITH USER_MODE];
             System.assertEquals(cases.size(), 0);
 
         }

@@ -1,4 +1,3 @@
-
 @isTest
 public with sharing class WarehouseSyncScheduleTest {
 
@@ -11,7 +10,7 @@ public with sharing class WarehouseSyncScheduleTest {
             skuList.add(String.valueOf(i));
         }
 
-        List<Product2> updatedList = [SELECT Id FROM Product2 Where Warehouse_SKU__c in :skuList];
+        List<Product2> updatedList = [SELECT Id FROM Product2 Where Warehouse_SKU__c in :skuList WITH USER_MODE];
         System.assertEquals(0, updatedList.size());
 
         Test.startTest();

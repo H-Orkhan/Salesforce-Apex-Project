@@ -1,5 +1,5 @@
 @IsTest
-private class WarehouseCalloutServiceTest {
+public with sharing class WarehouseCalloutServiceTest {
 
     @IsTest
     public static void testMockData() {
@@ -17,7 +17,7 @@ private class WarehouseCalloutServiceTest {
             oldProducts.add(pr);
         }
 
-        insert oldProducts;
+        insert as user oldProducts;
         Test.setMock(HttpCalloutMock.class, new WarehouseCalloutServiceMock());
         WarehouseCalloutService service = new WarehouseCalloutService();
         Test.startTest();
@@ -28,7 +28,7 @@ private class WarehouseCalloutServiceTest {
             skuList.add(String.valueOf(i));
 
         }
-        List<Product2> updatedList = [SELECT Id FROM Product2 Where Warehouse_SKU__c in :skuList];
+        List<Product2> updatedList = [SELECT Id FROM Product2 Where Warehouse_SKU__c in :skuList WITH USER_MODE];
         System.assertEquals(22, updatedList.size());
     
     }
